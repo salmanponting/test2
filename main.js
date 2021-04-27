@@ -1,46 +1,36 @@
-// select all the buttons
-const buttons = document.querySelectorAll('button');
-// select the <input type="text" class="display" disabled> element
-const display = document.querySelector('.display');
+function calculator() {
+  return {
+    usedKeyboard: false,
+    formula: '',
+    updateTotal(nextInput) {
+      if (this.startsWithOperator(nextInput)) return
+      if (this.hasDoubleOperators(nextInput)) return
 
-// add eventListener to each button
-buttons.forEach(function(button) {
-  button.addEventListener('click', calculate);
-});
+      if (nextInput === 'BS') {
+        // Baackspace
+        this.formula = this.formula.slice(0, -1)
+      } else if (nextInput === '') {
+        // Clear
+        this.formula = ''
+      } else {
+        this.formula = this.formula + nextInput
+      }
 
-// calculate function
-function calculate(event) {
-  // current clicked buttons value
-  const clickedButtonValue = event.target.value;
-
-  if (clickedButtonValue === '=') {
-    // check if the display is not empty then only do the calculation
-    if (display.value !== '') {
-      // calculate and show the answer to display
-      display.value = eval(display.value);
+    },
+    get total() {
+      let total = 0
+      let temp
+      temp = this.formula.match(/[+\-]*(\.\d+|\d+(\.\d+)?)/g) || []
+      while (temp.length) {
+        total += parseFloat(temp.shift())
+      }
+      return total
+    },
+    hasDoubleOperators(nextInput) {
+      return ['+', '-'].includes(nextInput.slice(-1)) && ['+', '-'].includes(this.formula.slice(-1))
+    },
+    startsWithOperator(nextInput) {
+      return ['+', '-'].includes(nextInput) && !this.formula.length
     }
-  } else if (clickedButtonValue === 'C') {
-    // clear everything on display
-    display.value = '';
-  } else if (clickedButtonValue === 'f') {
-    // clear everything on display
-    a= display.value;
-    b= factorialize(a);
-    display.value = b;
-  }else {
-    // otherwise concatenate it to the display
-    display.value += clickedButtonValue;
-  }
-
-
-}
-
-function factorialize(num) {
-  if (num < 0)
-    return -1;
-  else if (num == 0)
-    return 1;
-  else {
-    return (num * factorialize(num - 1));
   }
 }
